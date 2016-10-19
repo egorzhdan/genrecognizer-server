@@ -49,7 +49,12 @@ def index():
             print(file.filename)
             filename = secure_filename(file.filename)
             file.save(filename)
-            sample_rate, x = wav.read(filename)
+
+            os.system('ffmpeg -ss 60 -t 60 -i "' + filename + '" "tmp.wav"')
+            os.system('rm "' + filename + '"')
+
+            sample_rate, x = wav.read('tmp.wav')
+            os.system('rm tmp.wav')
             x[x == 0] = 1
 
             res = mfcc(x, samplerate=sample_rate)
