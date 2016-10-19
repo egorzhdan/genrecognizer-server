@@ -13,7 +13,7 @@ app = Flask(__name__, static_folder='static')
 
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a']
-genres = sorted(['classical', 'rock', 'hiphop', 'pop', 'jazz'])
+genres = sorted(['classical', 'rock', 'hip-hop', 'pop', 'jazz'])
 
 
 def allowed_file(filename):

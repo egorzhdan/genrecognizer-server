@@ -2,8 +2,26 @@
 
 {% block content %}
 
-    {% for item in results %}
-        <p>{{ item[0] }} - {{ item[2] }}</p>
-    {% endfor %}
+    <table class="centered">
+        <thead>
+        <tr>
+            <th data-field="genre">Genre</th>
+            <th data-field="prob">Probability</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in results %}
+            <tr>
+            <td>
+                <span>{{ item[0] }}</span>
+            </td>
+            <td>
+                <span>{{ item[2] }}</span>
+            </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
 
 {% endblock %}
