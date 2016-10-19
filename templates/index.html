@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <form method="post" action="" enctype="multipart/form-data">
+        <div class="file-field input-field">
+            <div class="btn">
+                <span>Select</span>
+                <input type="file" name="file">
+            </div>
+            <div class="file-path-wrapper">
+                <input class="file-path validate" type="text" title="file">
+            </div>
+        </div>
+        <button class="btn-large waves-effect waves-light submit-btn" type="submit" name="action">Submit
+            <i class="material-icons right">send</i>
+        </button>
+    </form>
+
+
+{% endblock %}

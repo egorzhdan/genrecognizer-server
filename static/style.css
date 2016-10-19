@@ -1,0 +1,25 @@
+.card-panel {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    -moz-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+body {
+    background-color: #4db6ac;
+}
+
+.footer {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+.submit-btn {
+    width: 100%;
+}

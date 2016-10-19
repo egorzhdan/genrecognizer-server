@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>genrecognizer</title>
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+
+
+<div class="container">
+    <div class="card-panel">
+
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+{#<div class="footer">#}
+{#    <footer class="page-footer">#}
+{#        <div class="footer-copyright">#}
+{#            <div class="container center-align">#}
+{#                Egor Zhdan#}
+{#            </div>#}
+{#        </div>#}
+{#    </footer>#}
+{#</div>#}
+
+</body>
+
+</html>

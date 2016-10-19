@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    {% for item in results %}
+        <p>{{ item[0] }} - {{ item[2] }}</p>
+    {% endfor %}
+
+{% endblock %}
