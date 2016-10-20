@@ -8,6 +8,7 @@ import numpy as np
 import keras
 import json
 from keras.models import model_from_json
+import urllib.request, urllib.parse
 
 app = Flask(__name__, static_folder='static')
 
@@ -79,6 +80,22 @@ def page_not_found(e):
 def bad_request(e):
     print('bad request', e)
     return render_template('error.html', error='Bad Request'), 400
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    print('internal server error', e)
+    return render_template('error.html', error='Internal Server Error'), 400
+
+
+def send_disagree_report(track_title, genre_predicted):
+    bot_id = '296039634:AAGrRrRikkvIrInsdhK0g_-CWE1I3Zy5tqc'
+    chat_id = '29312956'
+    url = "https://api.telegram.org/bot" + bot_id + "/sendMessage?chat_id=" + chat_id + "&text=" + \
+          urllib.parse.quote('Track *' + track_title + '* was recognized as *' + genre_predicted + '*')
+    print(url)
+    result = urllib.request.urlopen(url).read()
+    print(result)
 
 
 if __name__ == '__main__':
