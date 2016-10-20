@@ -41,10 +41,10 @@ def index():
 
         print(request.files)
         if 'file' not in request.files:
-            return BadRequest()
+            raise BadRequest()
         file = request.files['file']
         if file.filename == '':
-            return BadRequest()
+            raise BadRequest()
         if file and allowed_file(file.filename):
             print(file.filename)
             filename = secure_filename(file.filename)
@@ -66,7 +66,19 @@ def index():
 
             answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
             return render_template('results.html', results=answer)
-        return BadRequest()
+        raise BadRequest()
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    print('not found')
+    return render_template('error.html', error='Not Found'), 404
+
+
+@app.errorhandler(400)
+def bad_request(e):
+    print('bad request', e)
+    return render_template('error.html', error='Bad Request'), 400
 
 
 if __name__ == '__main__':
