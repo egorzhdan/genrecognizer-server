@@ -12,19 +12,18 @@
         <tbody>
         {% for item in results %}
             <tr>
-            <td>
-                <span>{{ item[0] }}</span>
-            </td>
-            <td>
-                <span>{{ item[2] }}</span>
-            </td>
+                <td>
+                    <span>{{ item[0] }}</span>
+                </td>
+                <td>
+                    <span>{{ item[2] }}</span>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
     <br>
-{#    <a class="waves-effect waves-red btn-flat full-width-btn" href="/">Disagree</a>#}
-    <a class="waves-effect waves-light btn full-width-btn" href="/">Go to the Main Page</a>
-
+    {#    <a class="waves-effect waves-red btn-flat full-width-btn" href="/">Disagree</a>#}
+    <a class="waves-effect waves-light btn fw-btn bottom-btn" href="/">Go to the Main Page</a>
 
 {% endblock %}

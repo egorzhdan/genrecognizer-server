@@ -1,12 +1,6 @@
-.card-panel {
-    position: absolute;
-    left: 50%;
-    top: 40%;
-    -moz-transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    -o-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
+.main-panel {
+    /*position: absolute;*/
+    margin-top: 15%;
 }
 
 body {
@@ -22,4 +16,8 @@ body {
 
 .fw-btn {
     width: 100%;
+}
+
+.bottom-btn {
+    margin-bottom: 15px;
 }

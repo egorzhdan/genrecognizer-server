@@ -12,25 +12,16 @@
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+<script src="{{ url_for('static', filename='js.js') }}"></script>
 
-
-<div class="container">
-    <div class="card-panel">
-
-
-        {% block content %}
-        {% endblock %}
+<div class="container main-panel">
+    <div class="row">
+        <div class="card-panel col s6 offset-s3">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
 </div>
-{#<div class="footer">#}
-{#    <footer class="page-footer">#}
-{#        <div class="footer-copyright">#}
-{#            <div class="container center-align">#}
-{#                Egor Zhdan#}
-{#            </div>#}
-{#        </div>#}
-{#    </footer>#}
-{#</div>#}
 
 </body>
 
