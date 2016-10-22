@@ -2,6 +2,8 @@ from flask import Flask, request, render_template, url_for, send_from_directory
 from werkzeug.exceptions import BadRequest
 from werkzeug.utils import secure_filename, redirect
 import os
+import string
+import random
 import scipy.io.wavfile as wav
 from base import mfcc
 import numpy as np
@@ -21,6 +23,10 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def random_string(n):
+    return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(n))
+
+
 def read_model():
     with open(os.path.join(SITE_ROOT, 'static', 'model'), 'r') as file:
         md = model_from_json(json.load(file))
@@ -29,6 +35,23 @@ def read_model():
 
 
 model = None
+
+
+def process(filename):
+    os.system('ffmpeg -loglevel fatal -ss 60 -t 60 -i "' + filename + '" "' + filename + '-1.wav"')
+    os.system('rm "' + filename + '"')
+
+    sample_rate, x = wav.read(filename + '-1.wav')
+    os.system('rm "' + filename + '-1.wav"')
+    x[x == 0] = 1
+
+    res = mfcc(x, samplerate=sample_rate)
+    num_mfcc = len(res)
+    mfcc_data = np.mean(res[int(num_mfcc / 10):int(num_mfcc * 9 / 10)], axis=0)
+
+    result = model.predict_proba(np.array([mfcc_data]))[0]
+    print(result)
+    return result
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -41,32 +64,36 @@ def index():
             model = read_model()
 
         print(request.files)
-        if 'file' not in request.files:
-            raise BadRequest()
-        file = request.files['file']
-        if file.filename == '':
-            raise BadRequest()
-        if file and allowed_file(file.filename):
-            print(file.filename)
-            filename = secure_filename(file.filename)
-            file.save(filename)
 
-            os.system('ffmpeg -ss 60 -t 60 -i "' + filename + '" "tmp.wav"')
-            os.system('rm "' + filename + '"')
+        if 'file' in request.files:
+            file = request.files['file']
+            if file.filename == '':
+                raise BadRequest()
+            if file and allowed_file(file.filename):
+                print(file.filename)
+                filename = secure_filename(file.filename)
+                file.save(filename)
 
-            sample_rate, x = wav.read('tmp.wav')
-            os.system('rm tmp.wav')
-            x[x == 0] = 1
+                result = process(filename)
 
-            res = mfcc(x, samplerate=sample_rate)
-            num_mfcc = len(res)
-            mfcc_data = np.mean(res[int(num_mfcc / 10):int(num_mfcc * 9 / 10)], axis=0)
+                answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
+                return render_template('results.html', results=answer)
+        elif 'select' in request.form:
+            source = request.form['select']
+            url = request.form['url']
+            print(source, url)
+            filename = random_string(20)
+            print('filename =', filename)
+            if source == 'youtube':
+                os.system('youtube-dl --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
+                          '.%(ext)s" "' + url + '"')
 
-            result = model.predict_proba(np.array([mfcc_data]))[0]
-            print(result)
+                result = process(filename + '.wav')
 
-            answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
-            return render_template('results.html', results=answer)
+                answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
+                return render_template('results.html', results=answer)
+            elif source == 'lastfm':
+                pass
         raise BadRequest()
 
 
@@ -85,7 +112,13 @@ def bad_request(e):
 @app.errorhandler(500)
 def internal_server_error(e):
     print('internal server error', e)
-    return render_template('error.html', error='Internal Server Error'), 400
+    return render_template('error.html', error='Internal Server Error'), 500
+
+
+@app.errorhandler(503)
+def service_unavailable(e):
+    print('service unavailable', e)
+    return render_template('error.html', error='Service Unavailable'), 503
 
 
 def send_disagree_report(track_title, genre_predicted):
