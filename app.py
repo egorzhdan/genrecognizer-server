@@ -59,7 +59,7 @@ def index():
     global model
     if request.method == 'GET':
         return render_template('index.html')
-    else:
+    elif request.method == 'POST':
         if model is None:
             model = read_model()
 
