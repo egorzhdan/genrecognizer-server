@@ -57,7 +57,7 @@ def process(filename):
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global model
-    if request.method == 'GET':
+    if request.method == 'GET' or request.method == 'HEAD':
         return render_template('index.html')
     elif request.method == 'POST':
         if model is None:
