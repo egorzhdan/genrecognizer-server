@@ -7,6 +7,9 @@ import random
 import scipy.io.wavfile as wav
 import numpy as np
 import keras
+import mock
+import sys
+sys.modules.update((mod_name, mock.Mock()) for mod_name in ['matplotlib', 'matplotlib.pyplot', 'matplotlib.image'])
 import librosa
 import json
 from keras.models import model_from_json
