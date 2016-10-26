@@ -5,9 +5,9 @@ import os
 import string
 import random
 import scipy.io.wavfile as wav
-from base import mfcc
 import numpy as np
 import keras
+import librosa
 import json
 from keras.models import model_from_json
 import urllib.request, urllib.parse
@@ -37,19 +37,25 @@ def read_model():
 model = None
 
 
+def spectrogram(file_path):
+    y, sr = librosa.load(file_path)
+    s = librosa.feature.melspectrogram(y, sr=sr, n_mels=128)
+    log = librosa.logamplitude(s, ref_power=np.max)
+    return log[:, :1200]
+
+
 def process(filename):
     os.system('ffmpeg -loglevel fatal -ss 60 -t 60 -i "' + filename + '" "' + filename + '-1.wav"')
     os.system('rm "' + filename + '"')
 
-    sample_rate, x = wav.read(filename + '-1.wav')
+    spectr = spectrogram(filename + '-1.wav')
     os.system('rm "' + filename + '-1.wav"')
-    x[x == 0] = 1
 
-    res = mfcc(x, samplerate=sample_rate)
-    num_mfcc = len(res)
-    mfcc_data = np.mean(res[int(num_mfcc / 10):int(num_mfcc * 9 / 10)], axis=0)
+    x = np.asarray([spectr])
+    x = x.astype('float32')
+    x /= 256.0
 
-    result = model.predict_proba(np.array([mfcc_data]))[0]
+    result = model.predict_proba(x)[0]
     print(result)
     return result
 
@@ -99,7 +105,7 @@ def index():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    print('not found')
+    print('not found', e)
     return render_template('error.html', error='Not Found'), 404
 
 
