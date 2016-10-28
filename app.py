@@ -9,16 +9,18 @@ import numpy as np
 import keras
 from unittest import mock
 import sys
-sys.modules.update((mod_name, mock.Mock()) for mod_name in ['matplotlib', 'matplotlib.pyplot', 'matplotlib.image'])
-import librosa
 import json
 from keras.models import model_from_json
 import urllib.request, urllib.parse
 
+sys.modules.update((mod_name, mock.Mock()) for mod_name in ['matplotlib', 'matplotlib.pyplot', 'matplotlib.image'])
+
+import librosa
+
 app = Flask(__name__, static_folder='static')
 
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a']
+ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'flac']
 genres = sorted(['classical', 'rock', 'hip-hop', 'pop', 'jazz'])
 
 
