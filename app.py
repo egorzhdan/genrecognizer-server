@@ -60,7 +60,14 @@ def process(filename):
     x = x.astype('float32')
     x /= 256.0
 
-    result = model.predict_proba(x)[0]
+    new_x = []
+
+    for i in range(len(x)):
+        new_x.append([x[i]])
+
+    new_x = np.array(new_x)
+
+    result = model.predict_proba(new_x)[0]
     print(result)
     return result
 
