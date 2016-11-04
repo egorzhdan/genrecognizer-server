@@ -1,5 +1,6 @@
-from flask import Flask, request, render_template, url_for, send_from_directory
-from werkzeug.exceptions import BadRequest
+import werkzeug
+from flask import Flask, request, render_template, url_for, send_from_directory, abort
+from werkzeug.exceptions import BadRequest, Gone
 from werkzeug.utils import secure_filename, redirect
 import os
 import string
@@ -37,6 +38,14 @@ def read_model():
         md = model_from_json(json.load(file))
         md.load_weights(os.path.join(SITE_ROOT, 'static', 'weights'))
         return md
+
+
+class UnavailableForLegalReasons(werkzeug.exceptions.HTTPException):
+    code = 451
+    description = ''
+
+
+abort.mapping[451] = UnavailableForLegalReasons
 
 
 model = None
@@ -98,6 +107,8 @@ def index():
                 return render_template('results.html', results=answer)
         elif 'select' in request.form:
             source = request.form['select']
+            if len(source) == 0:
+                raise BadRequest()
             url = request.form['url']
             print(source, url)
             filename = random_string(20)
@@ -106,7 +117,10 @@ def index():
                 os.system('youtube-dl --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
                           '.%(ext)s" "' + url + '"')
 
-                result = process(filename + '.wav')
+                try:
+                    result = process(filename + '.wav')
+                except FileNotFoundError:
+                    raise LegalReas("This video is unavailable in the United States")
 
                 answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
                 return render_template('results.html', results=answer)
@@ -137,6 +151,12 @@ def internal_server_error(e):
 def service_unavailable(e):
     print('service unavailable', e)
     return render_template('error.html', error='Service Unavailable'), 503
+
+
+@app.errorhandler(451)
+def service_unavailable(e):
+    print('unavailable for legal reasons', e)
+    return render_template('error.html', error='Unavailable for Legal Reasons'), 451
 
 
 def send_disagree_report(track_title, genre_predicted):
