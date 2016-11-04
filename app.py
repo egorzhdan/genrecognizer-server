@@ -40,14 +40,6 @@ def read_model():
         return md
 
 
-class UnavailableForLegalReasons(werkzeug.exceptions.HTTPException):
-    code = 451
-    description = ''
-
-
-abort.mapping[451] = UnavailableForLegalReasons
-
-
 model = None
 
 
@@ -120,7 +112,7 @@ def index():
                 try:
                     result = process(filename + '.wav')
                 except FileNotFoundError:
-                    raise LegalReas("This video is unavailable in the United States")
+                    raise Gone("This video is unavailable in the United States")
 
                 answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
                 return render_template('results.html', results=answer)
@@ -153,10 +145,10 @@ def service_unavailable(e):
     return render_template('error.html', error='Service Unavailable'), 503
 
 
-@app.errorhandler(451)
+@app.errorhandler(410)
 def service_unavailable(e):
-    print('unavailable for legal reasons', e)
-    return render_template('error.html', error='Unavailable for Legal Reasons'), 451
+    print('gone', e)
+    return render_template('error.html', error=e.description), 410
 
 
 def send_disagree_report(track_title, genre_predicted):
