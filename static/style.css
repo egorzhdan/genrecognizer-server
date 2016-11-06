@@ -1,6 +1,18 @@
 .main-panel {
-    /*position: absolute;*/
     margin-top: 15%;
+}
+
+.t-col {
+    width: 50%;
+}
+
+.r-row {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.s-t {
+    margin-top: 10px;
 }
 
 body {
@@ -16,6 +28,10 @@ body {
 
 .fw-btn {
     width: 100%;
+}
+
+.row-btn {
+    margin-bottom: 0;
 }
 
 .bottom-btn {

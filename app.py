@@ -1,6 +1,6 @@
 import werkzeug
 from flask import Flask, request, render_template, url_for, send_from_directory, abort
-from werkzeug.exceptions import BadRequest, Gone
+from werkzeug.exceptions import BadRequest, Gone, InternalServerError
 from werkzeug.utils import secure_filename, redirect
 import os
 import string
@@ -50,9 +50,17 @@ def spectrogram(file_path):
     return log[:, :1200]
 
 
+def website_by_url(url):
+    return 'youtube'
+
+
 def process(filename):
     os.system('ffmpeg -loglevel fatal -ss 60 -t 60 -i "' + filename + '" "' + filename + '-1.wav"')
-    os.system('rm "' + filename + '"')
+    try:
+        os.system('rm "' + filename + '"')
+    except OSError:
+        print("OSError")
+        raise BadRequest('bad file')
 
     spectr = spectrogram(filename + '-1.wav')
     os.system('rm "' + filename + '-1.wav"')
@@ -73,6 +81,23 @@ def process(filename):
     return result
 
 
+def process_youtube(filename, url, need_title=False):
+    title = None
+    if need_title:
+        title = os.popen('youtube-dl --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
+        title = title.replace('<', '(').replace('>', ')')
+        print('TITLE =', title)
+    os.system('youtube-dl --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
+              '.%(ext)s" "' + url + '"')
+
+    try:
+        result = process(filename + '.wav')
+    except FileNotFoundError:
+        raise Gone("Failed to Download the Video")
+
+    return title, sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     global model
@@ -82,9 +107,8 @@ def index():
         if model is None:
             model = read_model()
 
-        print(request.files)
-
         if 'file' in request.files:
+            print(request.files)
             file = request.files['file']
             if file.filename == '':
                 raise BadRequest()
@@ -106,19 +130,29 @@ def index():
             filename = random_string(20)
             print('filename =', filename)
             if source == 'youtube':
-                os.system('youtube-dl --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
-                          '.%(ext)s" "' + url + '"')
-
-                try:
-                    result = process(filename + '.wav')
-                except FileNotFoundError:
-                    raise Gone("This video is unavailable in the United States")
-
-                answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
-                return render_template('results.html', results=answer)
+                title, answer = process_youtube(filename, url)
+                return render_template('results.html', show_title=False, results=answer, allow_disagree=True, url=url)
             elif source == 'lastfm':
                 pass
         raise BadRequest()
+
+
+@app.route('/disagree', methods=['GET'])
+def disagree():
+    print('Disagree', request.args)
+    if 'url' not in request.args:
+        raise BadRequest()
+    url = request.args['url']
+    website = website_by_url(url)
+
+    filename = random_string(20)
+    if website == 'youtube':
+        title, answer = process_youtube(filename, url, True)
+        predicted = answer[0][0]
+    else:
+        raise InternalServerError('unknown website')
+    send_disagree_report(title, predicted, url)
+    return 'ok'
 
 
 @app.errorhandler(404)
@@ -151,12 +185,11 @@ def service_unavailable(e):
     return render_template('error.html', error=e.description), 410
 
 
-def send_disagree_report(track_title, genre_predicted):
+def send_disagree_report(track_title, genre_predicted, url):
     bot_id = '296039634:AAGrRrRikkvIrInsdhK0g_-CWE1I3Zy5tqc'
     chat_id = '29312956'
     url = "https://api.telegram.org/bot" + bot_id + "/sendMessage?chat_id=" + chat_id + "&text=" + \
-          urllib.parse.quote('Track *' + track_title + '* was recognized as *' + genre_predicted + '*')
-    print(url)
+          urllib.parse.quote('*' + track_title + '* was recognized as *' + genre_predicted + '*' + '\nURL: ' + url)
     result = urllib.request.urlopen(url).read()
     print(result)
 
