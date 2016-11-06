@@ -37,3 +37,8 @@ body {
 .bottom-btn {
     margin-bottom: 15px;
 }
+
+#loader {
+    margin-bottom: 50px;
+    margin-top: 50px;
+}

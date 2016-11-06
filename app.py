@@ -1,5 +1,5 @@
 import werkzeug
-from flask import Flask, request, render_template, url_for, send_from_directory, abort
+from flask import Flask, request, render_template, url_for, send_from_directory, abort, jsonify
 from werkzeug.exceptions import BadRequest, Gone, InternalServerError
 from werkzeug.utils import secure_filename, redirect
 import os
@@ -136,6 +136,46 @@ def index():
         raise BadRequest()
 
 
+@app.route('/recognize', methods=['POST'])
+def recognize():
+    global model
+    if model is None:
+        model = read_model()
+
+    if 'file' in request.files:
+        print(request.files)
+        file = request.files['file']
+        if file.filename == '':
+            raise BadRequest()
+        if file and allowed_file(file.filename):
+            print(file.filename)
+            filename = secure_filename(file.filename)
+            file.save(filename)
+
+            result = process(filename)
+
+            answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
+            # return jsonify({'results': answer})
+            return render_template('results.html', results=answer)
+    elif 'select' in request.form:
+        source = request.form['select']
+        if len(source) == 0:
+            raise BadRequest()
+        url = request.form['url']
+        print(source, url)
+        filename = random_string(20)
+        print('filename =', filename)
+        if source == 'youtube':
+            title, answer = process_youtube(filename, url)
+            # for i in range(len(answer)):
+            #     answer[i] = (answer[i][0], str(answer[i][1]), answer[i][2])
+            # return jsonify({'show_title': False, 'results': answer, 'allow_disagree': True, 'url': url})
+            return render_template('results.html', show_title=False, results=answer, allow_disagree=True, url=url)
+        elif source == 'lastfm':
+            pass
+    raise BadRequest()
+
+
 @app.route('/disagree', methods=['GET'])
 def disagree():
     print('Disagree', request.args)
@@ -188,7 +228,7 @@ def send_disagree_report(track_title, genre_predicted, url):
     bot_id = '296039634:AAGrRrRikkvIrInsdhK0g_-CWE1I3Zy5tqc'
     chat_id = '29312956'
     url = "https://api.telegram.org/bot" + bot_id + "/sendMessage?chat_id=" + chat_id + "&text=" + \
-          urllib.parse.quote('*' + track_title + '* was recognized as *' + genre_predicted + '*' + '\nURL: ' + url)
+          urllib.parse.quote('' + track_title + ' was recognized as ' + genre_predicted + '' + '\nURL: ' + url)
     urllib.request.urlopen(url).read()
 
 
