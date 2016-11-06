@@ -84,9 +84,8 @@ def process(filename):
 def process_youtube(filename, url, need_title=False):
     title = None
     if need_title:
-        title = os.popen('youtube-dl --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
+        title = os.popen('youtube-dl -q --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
         title = title.replace('<', '(').replace('>', ')')
-        print('TITLE =', title)
     os.system('youtube-dl --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
               '.%(ext)s" "' + url + '"')
 
@@ -190,8 +189,7 @@ def send_disagree_report(track_title, genre_predicted, url):
     chat_id = '29312956'
     url = "https://api.telegram.org/bot" + bot_id + "/sendMessage?chat_id=" + chat_id + "&text=" + \
           urllib.parse.quote('*' + track_title + '* was recognized as *' + genre_predicted + '*' + '\nURL: ' + url)
-    result = urllib.request.urlopen(url).read()
-    print(result)
+    urllib.request.urlopen(url).read()
 
 
 if __name__ == '__main__':
