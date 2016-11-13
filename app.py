@@ -109,44 +109,12 @@ def process_youtube(filename, url, need_title=False, need_image=False):
     return title, sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1]), image
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def index():
     global model
     if request.method == 'GET' or request.method == 'HEAD':
         return render_template('index.html')
-    elif request.method == 'POST':
-        if model is None:
-            model = read_model()
-
-        if 'file' in request.files:
-            print(request.files)
-            file = request.files['file']
-            if file.filename == '':
-                raise BadRequest()
-            if file and allowed_file(file.filename):
-                print(file.filename)
-                filename = secure_filename(file.filename)
-                file.save(filename)
-
-                result, _ = process(filename)
-
-                answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
-                return render_template('results.html', results=answer)
-        elif 'select' in request.form:
-            source = request.form['select']
-            if len(source) == 0:
-                raise BadRequest()
-            url = request.form['url']
-            print(source, url)
-            filename = random_string(20)
-            print('filename =', filename)
-            if source == 'youtube':
-                title, answer = process_youtube(filename, url, need_title=True)
-                return render_template('results.html', show_title=True, title=title, results=answer,
-                                       allow_disagree=True, url=url)
-            elif source == 'lastfm':
-                pass
-        raise BadRequest()
+    raise BadRequest()
 
 
 @app.route('/recognize', methods=['POST'])
@@ -184,7 +152,8 @@ def recognize():
             #     answer[i] = (answer[i][0], str(answer[i][1]), answer[i][2])
             # return jsonify({'show_title': False, 'results': answer, 'allow_disagree': True, 'url': url})
             return render_template('results.html', show_title=True, title=title,
-                                   results=answer, allow_disagree=True, url=url, base64img=image)
+                                   title_safe=title.replace('\'', '').replace('\"', ''), results=answer,
+                                   allow_disagree=True, url=url, base64img=image)
         elif source == 'lastfm':
             pass
     raise BadRequest()
