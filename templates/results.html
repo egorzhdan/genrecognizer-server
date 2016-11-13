@@ -29,6 +29,8 @@
     </tbody>
 </table>
 <br>
+<img src="data:image/png;base64,{{ base64img }}" width="100%" title="from 1:00 to 2:00 (minutes)">
+<br>
 {% if allow_disagree %}
     <div class="row r-row">
         <div class="col s6">
@@ -37,7 +39,7 @@
         </div>
         <div class="col s6">
             <a class="waves-effect waves-light red btn fw-btn" id="disagree"
-            onclick="disagree('{{ url }}', '{{ title }}', '{{ results[0][0] }}')">Disagree</a>
+               onclick="disagree('{{ url }}', '{{ title }}', '{{ results[0][0] }}')">Disagree</a>
         </div>
     </div>
 {% endif %}

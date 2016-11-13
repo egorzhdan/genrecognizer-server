@@ -9,14 +9,17 @@ import scipy.io.wavfile as wav
 import numpy as np
 import keras
 from unittest import mock
+from PIL import Image
 import sys
 import json
 from keras.models import model_from_json
 import urllib.request, urllib.parse
+import base64
 
-sys.modules.update((mod_name, mock.Mock()) for mod_name in ['matplotlib', 'matplotlib.pyplot', 'matplotlib.image'])
+# sys.modules.update((mod_name, mock.Mock()) for mod_name in ['matplotlib', 'matplotlib.pyplot', 'matplotlib.image'])
 
 import librosa
+import spectrograms
 
 app = Flask(__name__, static_folder='static')
 
@@ -47,14 +50,15 @@ def spectrogram(file_path):
     y, sr = librosa.load(file_path)
     s = librosa.feature.melspectrogram(y, sr=sr, n_mels=128)
     log = librosa.logamplitude(s, ref_power=np.max)
-    return log[:, :1200]
+    return log[:, :1200], sr
 
 
 def website_by_url(url):
     return 'youtube'
 
 
-def process(filename):
+def process(filename, need_image=False):
+    image = None
     os.system('ffmpeg -loglevel fatal -ss 60 -t 60 -i "' + filename + '" "' + filename + '-1.wav"')
     try:
         os.system('rm "' + filename + '"')
@@ -62,7 +66,14 @@ def process(filename):
         print("OSError")
         raise BadRequest('bad file')
 
-    spectr = spectrogram(filename + '-1.wav')
+    spectr, sr = spectrogram(filename + '-1.wav')
+
+    if need_image:
+        spectrograms.make_for_sample(spectr, sr, filename)
+        with open(filename + '.png', 'rb') as f:
+            image = base64.b64encode(f.read()).decode('utf-8').replace('\n', '')
+        os.system('rm "' + filename + '.png"')
+
     os.system('rm "' + filename + '-1.wav"')
 
     x = np.asarray([spectr])
@@ -78,10 +89,10 @@ def process(filename):
 
     result = model.predict_proba(new_x)[0]
     print(result)
-    return result
+    return result, image
 
 
-def process_youtube(filename, url, need_title=False):
+def process_youtube(filename, url, need_title=False, need_image=False):
     title = None
     if need_title:
         title = os.popen('youtube-dl -q --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
@@ -90,11 +101,11 @@ def process_youtube(filename, url, need_title=False):
               '.%(ext)s" "' + url + '"')
 
     try:
-        result = process(filename + '.wav')
+        result, image = process(filename + '.wav', need_image)
     except FileNotFoundError:
         raise Gone("Failed to Download the Video")
 
-    return title, sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
+    return title, sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1]), image
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -116,7 +127,7 @@ def index():
                 filename = secure_filename(file.filename)
                 file.save(filename)
 
-                result = process(filename)
+                result, _ = process(filename)
 
                 answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
                 return render_template('results.html', results=answer)
@@ -130,7 +141,8 @@ def index():
             print('filename =', filename)
             if source == 'youtube':
                 title, answer = process_youtube(filename, url, need_title=True)
-                return render_template('results.html', show_title=True, title=title, results=answer, allow_disagree=True, url=url)
+                return render_template('results.html', show_title=True, title=title, results=answer,
+                                       allow_disagree=True, url=url)
             elif source == 'lastfm':
                 pass
         raise BadRequest()
@@ -166,11 +178,12 @@ def recognize():
         filename = random_string(20)
         print('filename =', filename)
         if source == 'youtube':
-            title, answer = process_youtube(filename, url, need_title=True)
+            title, answer, image = process_youtube(filename, url, need_title=True, need_image=True)
             # for i in range(len(answer)):
             #     answer[i] = (answer[i][0], str(answer[i][1]), answer[i][2])
             # return jsonify({'show_title': False, 'results': answer, 'allow_disagree': True, 'url': url})
-            return render_template('results.html', show_title=True, title=title, results=answer, allow_disagree=True, url=url)
+            return render_template('results.html', show_title=True, title=title,
+                                   results=answer, allow_disagree=True, url=url, base64img=image)
         elif source == 'lastfm':
             pass
     raise BadRequest()
