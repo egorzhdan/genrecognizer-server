@@ -5,12 +5,9 @@ from werkzeug.utils import secure_filename, redirect
 import os
 import string
 import random
-import scipy.io.wavfile as wav
 import numpy as np
 import keras
 from unittest import mock
-from PIL import Image
-import sys
 import json
 from keras.models import model_from_json
 import urllib.request, urllib.parse
