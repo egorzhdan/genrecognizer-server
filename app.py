@@ -13,8 +13,6 @@ import sys
 import json
 from keras.models import model_from_json
 import urllib.request, urllib.parse
-from logentries import LogentriesHandler
-import logging
 
 sys.modules.update((mod_name, mock.Mock()) for mod_name in ['matplotlib', 'matplotlib.pyplot', 'matplotlib.image'])
 
@@ -25,11 +23,6 @@ app = Flask(__name__, static_folder='static')
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'flac']
 genres = sorted(['classical', 'rock', 'hip-hop', 'pop', 'jazz'])
-
-log = logging.getLogger('logentries')
-log.setLevel(logging.INFO)
-
-log.addHandler(LogentriesHandler('0ef36de6-71c8-4458-bf4e-87c4c51f4ae2'))
 
 
 def allowed_file(filename):
@@ -185,26 +178,25 @@ def recognize():
 
 @app.route('/agree', methods=['GET'])
 def agree():
-    print('Agree', request.args)
     if 'url' not in request.args or 'title' not in request.args or 'predicted' not in request.args:
         raise BadRequest()
     url = request.args['url']
     title = request.args['title']
     predicted = request.args['predicted']
-    log.error('Agreed: ' + title + ' was recognized as ' + predicted + ' (' + url + ')')
+    send_telegram_report('OK: ', title, predicted, url)
+    print('Agreed: ' + title + ' was recognized as ' + predicted + ' (' + url + ')')
     return 'ok'
 
 
 @app.route('/disagree', methods=['GET'])
 def disagree():
-    print('Disagree', request.args)
     if 'url' not in request.args or 'title' not in request.args or 'predicted' not in request.args:
         raise BadRequest()
     url = request.args['url']
     title = request.args['title']
     predicted = request.args['predicted']
-    send_disagree_report(title, predicted, url)
-    log.error('Disagreed: ' + title + ' was recognized as ' + predicted + ' (' + url + ')')
+    send_telegram_report('Wrong: ', title, predicted, url)
+    print('Disagreed: ' + title + ' was recognized as ' + predicted + ' (' + url + ')')
     return 'ok'
 
 
@@ -238,10 +230,10 @@ def service_unavailable(e):
     return render_template('error.html', error=e.description), 410
 
 
-def send_disagree_report(track_title, genre_predicted, url):
+def send_telegram_report(type, track_title, genre_predicted, url):
     bot_id = '296039634:AAGrRrRikkvIrInsdhK0g_-CWE1I3Zy5tqc'
     chat_id = '29312956'
-    url = "https://api.telegram.org/bot" + bot_id + "/sendMessage?chat_id=" + chat_id + "&text=" + \
+    url = "https://api.telegram.org/bot" + bot_id + "/sendMessage?chat_id=" + chat_id + "&text=" + type + \
           urllib.parse.quote('' + track_title + ' was recognized as ' + genre_predicted + '' + '\nURL: ' + url)
     urllib.request.urlopen(url).read()
 
