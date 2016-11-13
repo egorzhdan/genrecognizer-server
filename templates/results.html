@@ -2,44 +2,45 @@
 
 {#{% block content %}#}
 
-    {% if show_title %}
-        <h5 class="center-align s-t">{{ title }}</h5>
-    {% endif %}
+{% if show_title %}
+    <h5 class="center-align s-t">{{ title }}</h5>
+{% endif %}
 
-    <table class="centered results-table">
-        <thead>
-        <tr>
-            <th class="t-col" data-field="genre">Genre</th>
-            <th class="t-col" data-field="prob">Probability</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for item in results %}
-            {% if item[1] >= 0.01 %}
-                <tr>
-                    <td>
-                        <span>{{ item[0] }}</span>
-                    </td>
-                    <td>
-                        <span>{{ item[2] }}</span>
-                    </td>
-                </tr>
-            {% endif %}
-        {% endfor %}
-        </tbody>
-    </table>
-    <br>
-    {% if allow_disagree %}
-        <div class="row r-row">
-            <div class="col s6">
-                <a class="waves-effect waves-light red btn fw-btn" id="disagree" onclick="disagree('{{ url }}')">Disagree</a>
-            </div>
-            <div class="col s6">
-                <a class="waves-effect waves-light btn fw-btn" href="/">Main Page</a>
-            </div>
+<table class="centered results-table">
+    <thead>
+    <tr>
+        <th class="t-col" data-field="genre">Genre</th>
+        <th class="t-col" data-field="prob">Probability</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in results %}
+        {% if item[1] >= 0.01 %}
+            <tr>
+                <td>
+                    <span>{{ item[0] }}</span>
+                </td>
+                <td>
+                    <span>{{ item[2] }}</span>
+                </td>
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+{% if allow_disagree %}
+    <div class="row r-row">
+        <div class="col s6">
+            <a class="waves-effect waves-light green btn fw-btn" id="agree"
+               onclick="agree('{{ url }}', '{{ title }}', '{{ results[0][0] }}')">Agree</a>
         </div>
-    {% else %}
-        <a class="waves-effect waves-light btn fw-btn bottom-btn" href="/">Go to the Main Page</a>
-    {% endif %}
+        <div class="col s6">
+            <a class="waves-effect waves-light red btn fw-btn" id="disagree"
+            onclick="disagree('{{ url }}', '{{ title }}', '{{ results[0][0] }}')">Disagree</a>
+        </div>
+    </div>
+{% endif %}
+<a class="waves-effect waves-light btn fw-btn bottom-btn" href="/">Go to the Main Page</a>
 
 {#{% endblock %}#}

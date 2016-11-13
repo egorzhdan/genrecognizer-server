@@ -35,14 +35,27 @@ function webSubmit() {
     });
 }
 
-function disagree(theUrl) {
+function agree(theUrl, theTitle, thePredicted) {
+    $('#agree').addClass('disabled').html('Thanks!');
+    $.get(
+        '/agree',
+        {url: theUrl, title: theTitle, predicted: thePredicted},
+        function (resp) {
+            if (resp != 'ok') {
+                alert('Failed to report: ' + resp);
+            }
+        }
+    );
+}
+
+function disagree(theUrl, theTitle, thePredicted) {
     $('#disagree').addClass('disabled').html('Thanks!');
     $.get(
         '/disagree',
-        {url: theUrl},
+        {url: theUrl, title: theTitle, predicted: thePredicted},
         function (resp) {
             if (resp != 'ok') {
-                alert('Failed to report error: ' + resp);
+                alert('Failed to report: ' + resp);
             }
         }
     );

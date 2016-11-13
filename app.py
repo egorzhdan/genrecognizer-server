@@ -13,6 +13,8 @@ import sys
 import json
 from keras.models import model_from_json
 import urllib.request, urllib.parse
+from logentries import LogentriesHandler
+import logging
 
 sys.modules.update((mod_name, mock.Mock()) for mod_name in ['matplotlib', 'matplotlib.pyplot', 'matplotlib.image'])
 
@@ -23,6 +25,11 @@ app = Flask(__name__, static_folder='static')
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'flac']
 genres = sorted(['classical', 'rock', 'hip-hop', 'pop', 'jazz'])
+
+log = logging.getLogger('logentries')
+log.setLevel(logging.INFO)
+
+log.addHandler(LogentriesHandler('0ef36de6-71c8-4458-bf4e-87c4c51f4ae2'))
 
 
 def allowed_file(filename):
@@ -129,8 +136,8 @@ def index():
             filename = random_string(20)
             print('filename =', filename)
             if source == 'youtube':
-                title, answer = process_youtube(filename, url)
-                return render_template('results.html', show_title=False, results=answer, allow_disagree=True, url=url)
+                title, answer = process_youtube(filename, url, need_title=True)
+                return render_template('results.html', show_title=True, title=title, results=answer, allow_disagree=True, url=url)
             elif source == 'lastfm':
                 pass
         raise BadRequest()
@@ -166,31 +173,38 @@ def recognize():
         filename = random_string(20)
         print('filename =', filename)
         if source == 'youtube':
-            title, answer = process_youtube(filename, url)
+            title, answer = process_youtube(filename, url, need_title=True)
             # for i in range(len(answer)):
             #     answer[i] = (answer[i][0], str(answer[i][1]), answer[i][2])
             # return jsonify({'show_title': False, 'results': answer, 'allow_disagree': True, 'url': url})
-            return render_template('results.html', show_title=False, results=answer, allow_disagree=True, url=url)
+            return render_template('results.html', show_title=True, title=title, results=answer, allow_disagree=True, url=url)
         elif source == 'lastfm':
             pass
     raise BadRequest()
 
 
+@app.route('/agree', methods=['GET'])
+def agree():
+    print('Agree', request.args)
+    if 'url' not in request.args or 'title' not in request.args or 'predicted' not in request.args:
+        raise BadRequest()
+    url = request.args['url']
+    title = request.args['title']
+    predicted = request.args['predicted']
+    log.error('Agreed: ' + title + ' was recognized as ' + predicted + ' (' + url + ')')
+    return 'ok'
+
+
 @app.route('/disagree', methods=['GET'])
 def disagree():
     print('Disagree', request.args)
-    if 'url' not in request.args:
+    if 'url' not in request.args or 'title' not in request.args or 'predicted' not in request.args:
         raise BadRequest()
     url = request.args['url']
-    website = website_by_url(url)
-
-    filename = random_string(20)
-    if website == 'youtube':
-        title, answer = process_youtube(filename, url, True)
-        predicted = answer[0][0]
-    else:
-        raise InternalServerError('unknown website')
+    title = request.args['title']
+    predicted = request.args['predicted']
     send_disagree_report(title, predicted, url)
+    log.error('Disagreed: ' + title + ' was recognized as ' + predicted + ' (' + url + ')')
     return 'ok'
 
 
