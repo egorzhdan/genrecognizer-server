@@ -14,6 +14,9 @@ from keras.models import model_from_json
 import urllib.request, urllib.parse
 import base64
 
+import matplotlib as mpl
+mpl.use('Agg')
+import matplotlib.pyplot as plt
 # sys.modules.update((mod_name, mock.Mock()) for mod_name in ['tkinter', 'Tk', '_tkinter', 'tkinter.filedialog', 'matplotlib.backends', 'matplotlib.backends.tkagg'])
 
 import librosa
