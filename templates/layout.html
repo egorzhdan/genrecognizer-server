@@ -25,7 +25,7 @@
             <ul>
                 {% for recent in recents %}
                     <li class="rc-li"><b><a target="_blank" href="{{ recent['url'] }}">{{ recent['title'] }}</a></b> as
-                        <b>{{ recent['answer'][0][0] }}</b>
+                        <b>{{ recent['answer'] }}</b>
                     </li>
                 {% endfor %}
             </ul>

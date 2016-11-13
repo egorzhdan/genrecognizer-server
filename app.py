@@ -28,7 +28,19 @@ SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'flac']
 genres = sorted(['classical', 'rock', 'hip-hop', 'pop', 'jazz'])
 
-recents = []
+
+def get_recents():
+    val = os.environ.get('gr_recents')
+    if val is None:
+        return []
+    return json.loads(val)
+
+
+def add_recent(data):
+    rec = [data] + get_recents()
+    if len(rec) > 5:
+        rec = rec[:5]
+    os.environ['gr_recents'] = json.dumps(rec)
 
 
 def allowed_file(filename):
@@ -115,13 +127,14 @@ def process_youtube(filename, url, need_title=False, need_image=False):
 def index():
     global model
     if request.method == 'GET' or request.method == 'HEAD':
-        return render_template('index.html', recents=recents)
+        print(get_recents())
+        return render_template('index.html', recents=get_recents())
     raise BadRequest()
 
 
 @app.route('/recognize', methods=['POST'])
 def recognize():
-    global model, recents
+    global model
     if model is None:
         model = read_model()
 
@@ -151,9 +164,7 @@ def recognize():
             title, answer, image = process_youtube(filename, url, need_title=True, need_image=True)
             if len(title) > 60:
                 title = title[:57] + '...'
-            recents.insert(0, {'title': title, 'answer': answer, 'url': url})
-            if len(recents) > 5:
-                recents = recents[:5]
+            add_recent({'title': title, 'answer': answer[0][0], 'url': url})
             return render_template('results.html', show_title=True, title=title,
                                    title_safe=title.replace('\'', '').replace('\"', ''), results=answer,
                                    allow_disagree=True, url=url, base64img=image)
