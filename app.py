@@ -14,7 +14,7 @@ from keras.models import model_from_json
 import urllib.request, urllib.parse
 import base64
 
-sys.modules.update((mod_name, mock.Mock()) for mod_name in ['tkinter', 'Tk', '_tkinter'])
+sys.modules.update((mod_name, mock.Mock()) for mod_name in ['tkinter', 'Tk', '_tkinter', 'tkinter.filedialog'])
 
 import librosa
 import spectrograms
