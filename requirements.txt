@@ -6,5 +6,5 @@ gevent
 gunicorn
 h5py==2.6.0
 youtube_dl==2016.10.21.1
-matplotlib==1.1.0
+matplotlib
 librosa
