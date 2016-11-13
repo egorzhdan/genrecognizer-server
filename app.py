@@ -7,13 +7,14 @@ import string
 import random
 import numpy as np
 import keras
+import sys
 from unittest import mock
 import json
 from keras.models import model_from_json
 import urllib.request, urllib.parse
 import base64
 
-# sys.modules.update((mod_name, mock.Mock()) for mod_name in ['matplotlib', 'matplotlib.pyplot', 'matplotlib.image'])
+sys.modules.update((mod_name, mock.Mock()) for mod_name in ['tkinter', 'Tk', '_tkinter'])
 
 import librosa
 import spectrograms
