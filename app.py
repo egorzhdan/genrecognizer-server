@@ -15,9 +15,9 @@ import urllib.request, urllib.parse
 import base64
 
 import matplotlib as mpl
+
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-# sys.modules.update((mod_name, mock.Mock()) for mod_name in ['tkinter', 'Tk', '_tkinter', 'tkinter.filedialog', 'matplotlib.backends', 'matplotlib.backends.tkagg'])
 
 import librosa
 import spectrograms
@@ -27,6 +27,8 @@ app = Flask(__name__, static_folder='static')
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'flac']
 genres = sorted(['classical', 'rock', 'hip-hop', 'pop', 'jazz'])
+
+recents = []
 
 
 def allowed_file(filename):
@@ -113,13 +115,13 @@ def process_youtube(filename, url, need_title=False, need_image=False):
 def index():
     global model
     if request.method == 'GET' or request.method == 'HEAD':
-        return render_template('index.html')
+        return render_template('index.html', recents=recents)
     raise BadRequest()
 
 
 @app.route('/recognize', methods=['POST'])
 def recognize():
-    global model
+    global model, recents
     if model is None:
         model = read_model()
 
@@ -136,7 +138,6 @@ def recognize():
             result = process(filename)
 
             answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
-            # return jsonify({'results': answer})
             return render_template('results.html', results=answer)
     elif 'select' in request.form:
         source = request.form['select']
@@ -148,9 +149,11 @@ def recognize():
         print('filename =', filename)
         if source == 'youtube':
             title, answer, image = process_youtube(filename, url, need_title=True, need_image=True)
-            # for i in range(len(answer)):
-            #     answer[i] = (answer[i][0], str(answer[i][1]), answer[i][2])
-            # return jsonify({'show_title': False, 'results': answer, 'allow_disagree': True, 'url': url})
+            if len(title) > 60:
+                title = title[:57] + '...'
+            recents.insert(0, {'title': title, 'answer': answer, 'url': url})
+            if len(recents) > 5:
+                recents = recents[:5]
             return render_template('results.html', show_title=True, title=title,
                                    title_safe=title.replace('\'', '').replace('\"', ''), results=answer,
                                    allow_disagree=True, url=url, base64img=image)

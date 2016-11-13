@@ -16,9 +16,19 @@
 
 <div class="container main-panel">
     <div class="row">
-        <div id="main-div" class="card-panel col s10 offset-s1 m6 l6 offset-m3 offset-l3">
+        <div id="main-div" class="card-panel col s10 offset-s1 m6 l6 offset-m1 offset-l1">
             {% block content %}
             {% endblock %}
+        </div>
+        <div class="card-panel recents col s10 offset-s1 m4 l4">
+            <h5>Recently recognized:</h5>
+            <ul>
+                {% for recent in recents %}
+                    <li class="rc-li"><b><a target="_blank" href="{{ recent['url'] }}">{{ recent['title'] }}</a></b> as
+                        <b>{{ recent['answer'][0][0] }}</b>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>

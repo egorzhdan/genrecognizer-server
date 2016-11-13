@@ -2,6 +2,15 @@
     margin-top: 15%;
 }
 
+.recents {
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+}
+
+.rc-li {
+    margin-bottom: 7px !important;
+}
+
 .t-col {
     width: 50%;
 }
