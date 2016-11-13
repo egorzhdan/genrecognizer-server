@@ -13,8 +13,8 @@ import json
 from keras.models import model_from_json
 import urllib.request, urllib.parse
 import base64
-
 import matplotlib as mpl
+from flask.ext.cacheify import init_cacheify
 
 mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -24,13 +24,15 @@ import spectrograms
 
 app = Flask(__name__, static_folder='static')
 
+cache = init_cacheify(app)
+
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'flac']
 genres = sorted(['classical', 'rock', 'hip-hop', 'pop', 'jazz'])
 
 
 def get_recents():
-    val = os.environ.get('gr_recents')
+    val = cache.get('gr_recents')
     if val is None:
         return []
     return json.loads(val)
@@ -40,7 +42,7 @@ def add_recent(data):
     rec = [data] + get_recents()
     if len(rec) > 5:
         rec = rec[:5]
-    os.environ['gr_recents'] = json.dumps(rec)
+    cache.set('gr_recents', json.dumps(rec))
 
 
 def allowed_file(filename):
