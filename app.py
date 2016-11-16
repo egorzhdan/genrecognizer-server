@@ -14,7 +14,6 @@ from keras.models import model_from_json
 import urllib.request, urllib.parse
 import base64
 import matplotlib as mpl
-from flask.ext.cacheify import init_cacheify
 
 mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -24,7 +23,7 @@ import spectrograms
 
 app = Flask(__name__, static_folder='static')
 
-cache = init_cacheify(app)
+cache = {'gr_recents': []}
 
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'flac']
@@ -32,17 +31,23 @@ genres = sorted(['classical', 'rock', 'hip-hop', 'pop', 'jazz'])
 
 
 def get_recents():
-    val = cache.get('gr_recents')
+    val = cache['gr_recents']
     if val is None:
         return []
-    return json.loads(val)
+    return val
 
 
 def add_recent(data):
     rec = [data] + get_recents()
     if len(rec) > 5:
         rec = rec[:5]
-    cache.set('gr_recents', json.dumps(rec))
+    cache['gr_recents'] = rec
+
+
+def mark_cache_verdict(url, vtype):
+    for item in cache['gr_recents']:
+        if item['url'] == url:
+            item['verdict'] = vtype
 
 
 def allowed_file(filename):
@@ -229,10 +234,11 @@ def service_unavailable(e):
     return render_template('error.html', error=e.description), 410
 
 
-def send_telegram_report(type, track_title, genre_predicted, url):
+def send_telegram_report(vtype, track_title, genre_predicted, url):
     bot_id = '296039634:AAGrRrRikkvIrInsdhK0g_-CWE1I3Zy5tqc'
     chat_id = '29312956'
-    url = "https://api.telegram.org/bot" + bot_id + "/sendMessage?chat_id=" + chat_id + "&text=" + type + \
+    mark_cache_verdict(url, vtype)
+    url = "https://api.telegram.org/bot" + bot_id + "/sendMessage?chat_id=" + chat_id + "&text=" + vtype + \
           urllib.parse.quote('' + track_title + ' was recognized as ' + genre_predicted + '' + '\nURL: ' + url)
     urllib.request.urlopen(url).read()
 

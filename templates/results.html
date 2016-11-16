@@ -35,11 +35,11 @@
     <div class="row r-row">
         <div class="col s6">
             <a class="waves-effect waves-light green btn fw-btn" id="agree"
-               onclick="agree('{{ url }}', '{{ title_safe }}', '{{ results[0][0] }}')">Agree</a>
+               onclick="agree('{{ url }}', '{{ title_safe }}', '{{ results[0][0] }}')"><i class="material-icons right">thumb_up</i> Agree</a>
         </div>
         <div class="col s6">
             <a class="waves-effect waves-light red btn fw-btn" id="disagree"
-               onclick="disagree('{{ url }}', '{{ title_safe }}', '{{ results[0][0] }}')">Disagree</a>
+               onclick="disagree('{{ url }}', '{{ title_safe }}', '{{ results[0][0] }}')"><i class="material-icons left">thumb_down</i> Disagree</a>
         </div>
     </div>
 {% endif %}

@@ -52,3 +52,11 @@ body {
     margin-bottom: 50px;
     margin-top: 50px;
 }
+
+.res-ok {
+    color: #2e7d32;
+}
+
+.res-wa {
+    color: #c62828;
+}
