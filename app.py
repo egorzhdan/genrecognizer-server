@@ -27,7 +27,7 @@ cache = {'gr_recents': []}
 
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 ALLOWED_EXTENSIONS = ['mp3', 'wav', 'm4a', 'flac']
-genres = sorted(['classical', 'rock', 'hip-hop', 'pop', 'jazz'])
+genres = sorted(['classical', 'country', 'rock', 'hip-hop', 'pop', 'jazz'])
 
 
 def get_recents():
