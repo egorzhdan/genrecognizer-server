@@ -149,7 +149,6 @@ def recognize_youtube(url=None):
     filename = random_string(20)
     print('EXT filename =', filename)
     title, answer, image = process_youtube(filename, url, need_title=False, need_image=False)
-    add_recent({'title': title, 'answer': answer[0][0], 'url': url})
     return json.dumps([answer[0][0], answer[0][2]])
 
 
