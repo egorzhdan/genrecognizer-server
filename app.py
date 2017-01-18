@@ -1,5 +1,6 @@
 import werkzeug
 from flask import Flask, request, render_template, url_for, send_from_directory, abort, jsonify
+from flask.ext.cors import CORS
 from werkzeug.exceptions import BadRequest, Gone, InternalServerError
 from werkzeug.utils import secure_filename, redirect
 import os
@@ -22,6 +23,7 @@ import librosa
 import spectrograms
 
 app = Flask(__name__, static_folder='static')
+CORS(app)
 
 cache = {'gr_recents': []}
 
