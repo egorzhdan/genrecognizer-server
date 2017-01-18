@@ -29,7 +29,7 @@
                     <i class="material-icons right">send</i>
                 </button>
             </form>
-            <small>Fetching audio from the web is recommended</small>
+            <small style="text-align: center">Loading audio from the web is recommended</small>
             <br>
         </div>
 
@@ -40,7 +40,7 @@
                         <select name="select">
                             <option value="" disabled>Choose</option>
                             <option value="youtube" selected>YouTube</option>
-                            {#                        <option value="lastfm">Last.fm</option>#}
+                            <option value="lastfm" disabled>Last.fm</option>
                         </select>
                     </div>
                     <div class="input-field col s8">
@@ -107,15 +107,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-{% endblock %}
-
-{% block info %}
-
-    <div class="center-block" style="color: white">
-        <p>Request timeout is 30 seconds; if downloading or processing an audio file exceeds this limit, server will drop the connection</p>
-        <p>Audio must be at least <b>2 minutes</b> long!</p>
     </div>
 
 {% endblock %}

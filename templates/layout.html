@@ -14,38 +14,79 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
 <script src="{{ url_for('static', filename='js.js') }}"></script>
 
-<div class="container main-panel">
-    <div class="row">
-        <div id="main-div" class="card-panel col s10 offset-s1 m6 l6 offset-m1 offset-l1">
-            {% block content %}
-            {% endblock %}
-        </div>
-        <div class="card-panel recents col s10 offset-s1 m4 l4">
-            <h5>Recently recognized:</h5>
-            <ul>
-                {% for recent in recents %}
-                    <li class="rc-li"><b><a target="_blank" href="{{ recent['url'] }}">{{ recent['title'] }}</a></b> as
-                        {% if 'verdict' in recent %}
-                            {% if 'OK' in recent['verdict'] %}
-                                <b class="res-ok">{{ recent['answer'] }}</b>
+<main>
+    <div class="container main-panel">
+        <h3 class="head">genrecognizer</h3>
+        <div class="row">
+            <div id="main-div" class="card-panel col s12 m6 l6">
+                {% block content %}
+                {% endblock %}
+            </div>
+            <div class="card-panel col s12 m5 l5 offset-m1 offset-l1">
+                <h5>Recents:</h5>
+                <ul>
+                    {% for recent in recents %}
+                        <li class="rc-li"><b><a target="_blank" href="{{ recent['url'] }}">{{ recent['title'] }}</a></b>
+                            as
+                            {% if 'verdict' in recent %}
+                                {% if 'OK' in recent['verdict'] %}
+                                    <b class="res-ok">{{ recent['answer'] }}</b>
+                                {% else %}
+                                    <b class="res-wa">{{ recent['answer'] }}</b>
+                                {% endif %}
                             {% else %}
-                                <b class="res-wa">{{ recent['answer'] }}</b>
+                                <b>{{ recent['answer'] }}</b>
                             {% endif %}
-                        {% else %}
-                            <b>{{ recent['answer'] }}</b>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col s10 offset-s1 m6 l6 offset-m1 offset-l1">
-            {% block info %}
-            {% endblock %}
+</main>
+
+<footer class="page-footer deep-purple accent-2">
+    <div class="container">
+        <div class="row">
+            <div class="col l6 s12">
+                <h5 class="white-text">Usage</h5>
+                <p class="grey-text text-lighten-4">
+                    Request timeout is 30 seconds; if downloading or processing an audio file exceeds this limit, server
+                    will drop the connection
+                </p>
+                <p class="grey-text text-lighten-4">
+                    Audio must be at least 2 minutes long
+                </p>
+            </div>
         </div>
     </div>
-</div>
+    <div class="footer-copyright">
+        <div class="container">
+            Created by Egor Zhdan
+            <span class="follow-tw right">
+                    <a class="twitter-follow-button" data-size="large" data-show-count="false"
+                       href="https://twitter.com/egor_zhdan"></a>
+            </span>
+        </div>
+    </div>
+</footer>
+
+<script>window.twttr = (function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0],
+        t = window.twttr || {};
+    if (d.getElementById(id)) return t;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "https://platform.twitter.com/widgets.js";
+    fjs.parentNode.insertBefore(js, fjs);
+
+    t._e = [];
+    t.ready = function (f) {
+        t._e.push(f);
+    };
+
+    return t;
+}(document, "script", "twitter-wjs"));</script>
 
 </body>
 

@@ -1,4 +1,3 @@
-import werkzeug
 from flask import Flask, request, render_template, url_for, send_from_directory, abort, jsonify
 from flask_cors import CORS
 from werkzeug.exceptions import BadRequest, Gone, InternalServerError
@@ -8,8 +7,7 @@ import string
 import random
 import numpy as np
 import keras
-import sys
-from unittest import mock
+
 import json
 from keras.models import model_from_json
 import urllib.request, urllib.parse
@@ -147,7 +145,6 @@ def recognize_youtube(url=None):
     if model is None:
         model = read_model()
     filename = random_string(20)
-    print('EXT filename =', filename)
     title, answer, image = process_youtube(filename, url, need_title=False, need_image=False)
     return json.dumps([answer[0][0], answer[0][2]])
 
@@ -178,6 +175,8 @@ def recognize():
             raise BadRequest()
         url = request.form['url']
         print(source, url)
+        if len(url.strip()) == 0:
+            raise BadRequest('empty url')
         filename = random_string(20)
         print('filename =', filename)
         if source == 'youtube':

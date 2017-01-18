@@ -1,5 +1,25 @@
 .main-panel {
-    margin-top: 15%;
+    margin-top: 70px;
+}
+
+.head {
+    color: white;
+    text-align: center;
+    margin-bottom: 50px
+}
+
+.follow-tw {
+    margin-top: 9px;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
 }
 
 .recents {
