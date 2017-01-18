@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, url_for, send_from_directory, abort, jsonify
 from flask_cors import CORS
-from werkzeug.exceptions import BadRequest, Gone, InternalServerError
+from werkzeug.exceptions import BadRequest, Gone, InternalServerError, NotFound, ServiceUnavailable
 from werkzeug.utils import secure_filename, redirect
 import os
 import string
@@ -125,7 +125,8 @@ def process_youtube(filename, url, need_title=False, need_image=False):
     try:
         result, image = process(filename + '.wav', need_image)
     except FileNotFoundError:
-        raise Gone("Failed to Download the Video")
+        raise ServiceUnavailable('Failed to download the video. '
+                                 'Please ensure you entered a correct URL and the video is available on the US YouTube')
 
     return title, sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1]), image
 
@@ -159,13 +160,13 @@ def recognize():
         print(request.files)
         file = request.files['file']
         if file.filename == '':
-            raise BadRequest()
+            raise BadRequest('File cannot have an empty name')
         if file and allowed_file(file.filename):
             print(file.filename)
             filename = secure_filename(file.filename)
             file.save(filename)
 
-            result = process(filename)
+            result, image = process(filename)
 
             answer = sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1])
             return render_template('results.html', results=answer)
@@ -188,8 +189,8 @@ def recognize():
                                    title_safe=title.replace('\'', '').replace('\"', ''), results=answer,
                                    allow_disagree=True, url=url, base64img=image)
         elif source == 'lastfm':
-            pass
-    raise BadRequest()
+            raise BadRequest('lastfm is not supported yet')
+    raise BadRequest('Neither file nor URL was submitted')
 
 
 @app.route('/agree', methods=['GET'])
@@ -225,25 +226,19 @@ def page_not_found(e):
 @app.errorhandler(400)
 def bad_request(e):
     print('bad request', e)
-    return render_template('error.html', error='Bad Request'), 400
+    return render_template('error.html', error='Bad Request', description=e.description), 400
 
 
 @app.errorhandler(500)
 def internal_server_error(e):
     print('internal server error', e)
-    return render_template('error.html', error='Internal Server Error'), 500
+    return render_template('error.html', error='Internal Server Error', description=e.description), 500
 
 
 @app.errorhandler(503)
 def service_unavailable(e):
     print('service unavailable', e)
-    return render_template('error.html', error='Service Unavailable'), 503
-
-
-@app.errorhandler(410)
-def service_unavailable(e):
-    print('gone', e)
-    return render_template('error.html', error=e.description), 410
+    return render_template('error.html', error='Service Unavailable', description=e.description), 503
 
 
 def send_telegram_report(vtype, track_title, genre_predicted, url):

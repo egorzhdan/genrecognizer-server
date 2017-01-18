@@ -3,12 +3,15 @@
 {% block content %}
 
     <style>
-    body {
-        background-color: #ef5350;
-    }
+        body {
+            background-color: #ef5350;
+        }
     </style>
 
     <h4 class="center-align"><span>{{ error }}</span></h4>
+    {% if description %}
+        <p class="center-align">{{ description }}</p>
+    {% endif %}
     <br>
     <a class="waves-effect waves-red btn-flat fw-btn bottom-btn center-align" href="/">Go to the Main Page</a>
 

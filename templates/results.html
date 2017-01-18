@@ -1,7 +1,3 @@
-{#{% extends "layout.html" %}#}
-
-{#{% block content %}#}
-
 {% if show_title %}
     <h5 class="center-align s-t">{{ title }}</h5>
 {% endif %}
@@ -29,20 +25,22 @@
     </tbody>
 </table>
 <br>
-<img src="data:image/png;base64,{{ base64img }}" width="100%" title="from 1:00 to 2:00 (minutes)">
-<br>
+{% if base64img %}
+    <img src="data:image/png;base64,{{ base64img }}" width="100%" title="from 1:00 to 2:00 (minutes)">
+    <br>
+{% endif %}
 {% if allow_disagree %}
     <div class="row r-row">
         <div class="col s6">
             <a class="waves-effect waves-light green btn fw-btn" id="agree"
-               onclick="agree('{{ url }}', '{{ title_safe }}', '{{ results[0][0] }}')"><i class="material-icons right">thumb_up</i> Agree</a>
+               onclick="agree('{{ url }}', '{{ title_safe }}', '{{ results[0][0] }}')"><i class="material-icons right">thumb_up</i>
+                Agree</a>
         </div>
         <div class="col s6">
             <a class="waves-effect waves-light red btn fw-btn" id="disagree"
-               onclick="disagree('{{ url }}', '{{ title_safe }}', '{{ results[0][0] }}')"><i class="material-icons left">thumb_down</i> Disagree</a>
+               onclick="disagree('{{ url }}', '{{ title_safe }}', '{{ results[0][0] }}')"><i
+                    class="material-icons left">thumb_down</i> Disagree</a>
         </div>
     </div>
 {% endif %}
 <a class="waves-effect waves-light btn fw-btn bottom-btn" href="/">Go to the Main Page</a>
-
-{#{% endblock %}#}
