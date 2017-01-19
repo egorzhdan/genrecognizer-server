@@ -119,7 +119,7 @@ def process_youtube(filename, url, need_title=False, need_image=False):
     if need_title:
         title = os.popen('youtube-dl -q --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
         title = title.replace('<', '(').replace('>', ')')
-    os.system('youtube-dl --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
+    os.system('youtube-dl --no-playlist --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
               '.%(ext)s" "' + url + '"')
 
     try:
