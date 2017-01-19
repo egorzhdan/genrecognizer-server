@@ -250,6 +250,11 @@ def send_telegram_report(vtype, track_title, genre_predicted, url):
     urllib.request.urlopen(url).read()
 
 
+@app.route('/chrome', methods=['GET'])
+def chrome_ext():
+    return render_template('chrome.html')
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    {% block main %}
+        <div class="container" style="margin-top: 20px">
+            <div class="row">
+                <div id="main-div" class="card-panel col s12 m8 l8 offset-m2 offset-l2">
+                    <div class="row" style="text-align: center">
+                        <h4 style="margin: 30px">genrecognizer + Chrome</h4>
+                        <div class="col s12 m6 l4 offset-m3 offset-l4">
+                            <a class="waves-effect waves-light btn-large fw-btn"
+                               href="{{ url_for('static', filename='ext.crx') }}">Download</a>
+                        </div>
+                        <div class="col s12">
+                            <p>Drag & drop it into the <a>chrome://extensions</a> window</p>
+
+                            <img class="responsive-img" src="{{ url_for('static', filename='chrome_ext.png') }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col s12 m10 l10 offset-m1 offset-l1">
+                            <div class="card-panel deep-orange">
+                                <span class="white-text">
+                                    Depending on the configuration of your browser, you may need to allow unsecure scripts to run on YouTube pages.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+
+{% endblock %}

@@ -14,62 +14,71 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
 <script src="{{ url_for('static', filename='js.js') }}"></script>
 
-<main>
-    <div class="container main-panel">
-        <h3 class="head">genrecognizer</h3>
-        <div class="row">
-            <div id="main-div" class="card-panel col s12 m6 l6">
-                {% block content %}
-                {% endblock %}
-            </div>
-            <div class="card-panel col s12 m5 l5 offset-m1 offset-l1">
-                <h5>Recents:</h5>
-                <ul>
-                    {% for recent in recents %}
-                        <li class="rc-li"><b><a target="_blank" href="{{ recent['url'] }}">{{ recent['title'] }}</a></b>
-                            as
-                            {% if 'verdict' in recent %}
-                                {% if 'OK' in recent['verdict'] %}
-                                    <b class="res-ok">{{ recent['answer'] }}</b>
+{% block main %}
+    <main>
+        <div class="container main-panel">
+            <h3 class="head">genrecognizer</h3>
+            <div class="row">
+                <div id="main-div" class="card-panel col s12 m6 l6">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+                <div class="card-panel col s12 m5 l5 offset-m1 offset-l1">
+                    <h5>Recents:</h5>
+                    <ul>
+                        {% for recent in recents %}
+                            <li class="rc-li"><b><a target="_blank" href="{{ recent['url'] }}">{{ recent['title'] }}</a></b>
+                                as
+                                {% if 'verdict' in recent %}
+                                    {% if 'OK' in recent['verdict'] %}
+                                        <b class="res-ok">{{ recent['answer'] }}</b>
+                                    {% else %}
+                                        <b class="res-wa">{{ recent['answer'] }}</b>
+                                    {% endif %}
                                 {% else %}
-                                    <b class="res-wa">{{ recent['answer'] }}</b>
+                                    <b>{{ recent['answer'] }}</b>
                                 {% endif %}
-                            {% else %}
-                                <b>{{ recent['answer'] }}</b>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<footer class="page-footer blue-grey">
-    <div class="container">
-        <div class="row">
-            <div class="col l6 s12">
-                <h5 class="white-text">Usage</h5>
-                <p class="grey-text text-lighten-4">
-                    Request timeout is 30 seconds; if downloading or processing an audio file exceeds this limit, server
-                    will drop the connection
-                </p>
-                <p class="grey-text text-lighten-4">
-                    Audio must be at least 2 minutes long
-                </p>
+    <footer class="page-footer blue-grey">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">Usage</h5>
+                    <p class="grey-text text-lighten-4">
+                        Request timeout is 30 seconds; if downloading or processing an audio file exceeds this limit,
+                        server
+                        will drop the connection
+                    </p>
+                    <p class="grey-text text-lighten-4">
+                        Audio must be at least 2 minutes long
+                    </p>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Extras</h5>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="chrome">Chrome Extension</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="footer-copyright">
-        <div class="container">
-            Created by Egor Zhdan
-            <span class="follow-tw right">
+        <div class="footer-copyright">
+            <div class="container">
+                Created by Egor Zhdan
+                <span class="follow-tw right">
                     <a class="twitter-follow-button" data-size="large" data-show-count="false"
                        href="https://twitter.com/egor_zhdan"></a>
             </span>
+            </div>
         </div>
-    </div>
-</footer>
+    </footer>
+{% endblock %}
 
 <script>window.twttr = (function (d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0],
