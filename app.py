@@ -81,14 +81,14 @@ def website_by_url(url):
 
 def process(filename, need_image=False):
     image = None
-    os.system('ffmpeg -loglevel fatal -ss 60 -t 60 -i "' + filename + '" "' + filename + '-1.mp3"')
+    os.system('ffmpeg -loglevel fatal -ss 60 -t 60 -i "' + filename + '" "' + filename + '-1.wav"')
     try:
         os.system('rm "' + filename + '"')
     except OSError:
         print("OSError")
         raise BadRequest('bad file')
 
-    spectr, sr = spectrogram(filename + '-1.mp3')
+    spectr, sr = spectrogram(filename + '-1.wav')
 
     if need_image:
         spectrograms.make_for_sample(spectr, sr, filename)
@@ -96,7 +96,7 @@ def process(filename, need_image=False):
             image = base64.b64encode(f.read()).decode('utf-8').replace('\n', '')
         os.system('rm "' + filename + '.png"')
 
-    os.system('rm "' + filename + '-1.mp3"')
+    os.system('rm "' + filename + '-1.wav"')
 
     x = np.asarray([spectr])
     x = x.astype('float32')
@@ -121,11 +121,11 @@ def process_youtube(filename, url, need_title=False, need_image=False):
     if need_title:
         title = os.popen('youtube-dl -q --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
         title = title.replace('<', '(').replace('>', ')')
-    os.system('youtube-dl --no-playlist --extract-audio --audio-format "mp3" --audio-quality 192 -o "' + filename +
+    os.system('youtube-dl --no-playlist --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
               '.%(ext)s" "' + url + '"')
 
     try:
-        result, image = process(filename + '.mp3', need_image)
+        result, image = process(filename + '.wav', need_image)
     except FileNotFoundError:
         raise ServiceUnavailable('Failed to download the video. '
                                  'Please ensure you entered a correct URL and the video is available on the US YouTube')
