@@ -69,10 +69,10 @@ model = None
 
 
 def spectrogram(file_path):
-    y, sr = librosa.load(file_path)
+    y, sr = librosa.load(file_path, offset=60.0, duration=60.0)
     s = librosa.feature.melspectrogram(y, sr=sr, n_mels=128)
     log = librosa.logamplitude(s, ref_power=np.max)
-    return log[:, :1200], sr
+    return log[:, :2400], sr
 
 
 def website_by_url(url):
@@ -81,7 +81,7 @@ def website_by_url(url):
 
 def process(filename, need_image=False):
     image = None
-    os.system('ffmpeg -loglevel fatal -ss 60 -t 60 -i "' + filename + '" "' + filename + '-1.wav"')
+    os.system('ffmpeg -loglevel fatal -i "' + filename + '" "' + filename + '-1.wav"')
     try:
         os.system('rm "' + filename + '"')
     except OSError:
@@ -116,6 +116,8 @@ def process(filename, need_image=False):
 
 def process_youtube(filename, url, need_title=False, need_image=False):
     title = None
+    if 'list=' in url:
+        url = url[:url.index('&list=')]
     if need_title:
         title = os.popen('youtube-dl -q --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
         title = title.replace('<', '(').replace('>', ')')
@@ -145,8 +147,6 @@ def recognize_youtube(url=None):
     global model
     if model is None:
         model = read_model()
-    if 'list=' in url:
-        url = url[:url.index('&list=')]
     filename = random_string(20)
     title, answer, image = process_youtube(filename, url, need_title=False, need_image=False)
     return json.dumps([answer[0][0], answer[0][2]])
