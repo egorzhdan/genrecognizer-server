@@ -145,6 +145,8 @@ def recognize_youtube(url=None):
     global model
     if model is None:
         model = read_model()
+    if 'list=' in url:
+        url = url[:url.index('&list=')]
     filename = random_string(20)
     title, answer, image = process_youtube(filename, url, need_title=False, need_image=False)
     return json.dumps([answer[0][0], answer[0][2]])
