@@ -162,7 +162,7 @@ def recognize():
         print(request.files)
         file = request.files['file']
         if file.filename == '':
-            raise BadRequest('File cannot have an empty name')
+            raise BadRequest('No file uploaded')
         if file and allowed_file(file.filename):
             print(file.filename)
             filename = secure_filename(file.filename)
@@ -179,7 +179,7 @@ def recognize():
         url = request.form['url']
         print(source, url)
         if len(url.strip()) == 0:
-            raise BadRequest('empty url')
+            raise BadRequest('URL cannot be empty')
         filename = random_string(20)
         print('filename =', filename)
         if source == 'youtube':
