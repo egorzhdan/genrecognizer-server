@@ -1,7 +1,7 @@
 Flask==0.11
 flask-cors
 Jinja2==2.8
-https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.9.0-cp35-cp35m-linux_x86_64.whl
+Theano==0.8.2
 Keras==1.1.0
 gevent
 gunicorn
