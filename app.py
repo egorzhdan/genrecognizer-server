@@ -69,7 +69,7 @@ model = None
 
 
 def spectrogram(file_path):
-    y, sr = librosa.load(file_path, offset=60.0, duration=60.0)
+    y, sr = librosa.load(file_path)
     s = librosa.feature.melspectrogram(y, sr=sr, n_mels=128)
     log = librosa.logamplitude(s, ref_power=np.max)
     return log[:, :2400], sr
@@ -81,7 +81,7 @@ def website_by_url(url):
 
 def process(filename, need_image=False):
     image = None
-    os.system('ffmpeg -loglevel fatal -i "' + filename + '" "' + filename + '-1.wav"')
+    os.system('ffmpeg -loglevel fatal -ss 60 -t 60 -i "' + filename + '" "' + filename + '-1.wav"')
     try:
         os.system('rm "' + filename + '"')
     except OSError:
