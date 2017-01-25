@@ -2,6 +2,14 @@ $(document).ready(function () {
     $('select').material_select();
 });
 
+function handleError(response) {
+    if (response.responseText) {
+        alert(response.responseText);
+    } else {
+        alert("Got empty response from the server");
+    }
+}
+
 function localSubmit() {
     $('#main').hide();
     $('#loader').show();
@@ -15,8 +23,7 @@ function localSubmit() {
             $('#main-div').html(data);
         },
         error: function (response, text, error) {
-            document.write(response.responseText);
-            document.close();
+            handleError(response);
         },
         cache: false,
         contentType: false,
@@ -30,8 +37,7 @@ function webSubmit() {
     $.post('recognize', $('#web-form').serialize(), function (data) {
         $('#main-div').html(data);
     }).fail(function (response) {
-        document.write(response.responseText);
-        document.close();
+        handleError(response);
     });
 }
 
