@@ -23,24 +23,39 @@
                     {% block content %}
                     {% endblock %}
                 </div>
-                <div class="card-panel col s12 m5 l5 offset-m1 offset-l1">
-                    <h5>Recents:</h5>
-                    <ul>
-                        {% for recent in recents %}
-                            <li class="rc-li"><b><a target="_blank" href="{{ recent['url'] }}">{{ recent['title'] }}</a></b>
-                                as
-                                {% if 'verdict' in recent %}
-                                    {% if 'OK' in recent['verdict'] %}
-                                        <b class="res-ok">{{ recent['answer'] }}</b>
+
+                <div class="col s12 m5 l5 offset-m1 offset-l1">
+                    <div class="card-panel">
+                        <h5 style="margin-top: 0">Examples:</h5>
+                        <ul style="margin-bottom: 0">
+                            {% for example in examples %}
+                                <li>
+                                    <a href="/vid={{ example.url }}"><i class="material-icons list-icon">input</i> {{ example.title }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="card-panel">
+                        <h5 style="margin-top: 0">Recents:</h5>
+                        <ul style="margin-bottom: 0">
+                            {% for recent in recents %}
+                                <li class="rc-li"><b><a target="_blank"
+                                                        href="{{ recent['url'] }}">{{ recent['title'] }}</a></b>
+                                    as
+                                    {% if 'verdict' in recent %}
+                                        {% if 'OK' in recent['verdict'] %}
+                                            <b class="res-ok">{{ recent['answer'] }}</b>
+                                        {% else %}
+                                            <b class="res-wa">{{ recent['answer'] }}</b>
+                                        {% endif %}
                                     {% else %}
-                                        <b class="res-wa">{{ recent['answer'] }}</b>
+                                        <b>{{ recent['answer'] }}</b>
                                     {% endif %}
-                                {% else %}
-                                    <b>{{ recent['answer'] }}</b>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

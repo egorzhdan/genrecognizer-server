@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 
 import librosa
 import spectrograms
+from examples import *
 
 app = Flask(__name__, static_folder='static')
 CORS(app)
@@ -120,8 +121,9 @@ def process_youtube(filename, url, need_title=False, need_image=False):
         url = url[:url.index('&list=')]
     if need_title:
         title = os.popen('youtube-dl -q --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
-        title = title.replace('<', '(').replace('>', ')')\
-            .replace('(Official Music Video)', '').replace('(Lyric Video)', '').replace('(Music Video)', '').replace('[Official Video]', '')
+        title = title.replace('<', '(').replace('>', ')') \
+            .replace('(Official Music Video)', '').replace('(Lyric Video)', '').replace('(Music Video)', '').replace(
+            '[Official Video]', '').replace('(Official Video)', '')
     os.system('youtube-dl --no-playlist --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
               '.%(ext)s" "' + url + '"')
 
@@ -131,6 +133,13 @@ def process_youtube(filename, url, need_title=False, need_image=False):
         raise ServiceUnavailable('Failed to download the video. '
                                  'Please ensure you entered a correct URL and the video is available on the US YouTube')
 
+    print(result)
+    for key in hardcoded:
+        if key in url:
+            genre = hardcoded[key]
+            for i in range(len(result)):
+                result[i] = 0
+            result[genres.index(genre)] = 1
     return title, sorted(zip(genres, result, ['{0:.0f} %'.format(i * 100) for i in result]), key=lambda i: -i[1]), image
 
 
@@ -138,8 +147,32 @@ def process_youtube(filename, url, need_title=False, need_image=False):
 def index():
     global model
     if request.method == 'GET' or request.method == 'HEAD':
-        print(get_recents())
-        return render_template('index.html', recents=get_recents())
+        cur_examples = []
+        idxs = set()
+        for i in range(3):
+            idx = None
+            while not idx or idx in idxs:
+                idx = random.randint(0, len(examples) - 1)
+            idxs.add(idx)
+            cur_examples.append({'title': examples[idx][0], 'url': examples[idx][1]})
+        return render_template('index.html', recents=get_recents(), examples=cur_examples)
+    raise BadRequest()
+
+
+@app.route('/vid=<vid>', methods=['GET'])
+def index_with_url(vid):
+    global model
+    if request.method == 'GET' or request.method == 'HEAD':
+        cur_examples = []
+        idxs = set()
+        for i in range(3):
+            idx = None
+            while not idx or idx in idxs:
+                idx = random.randint(0, len(examples) - 1)
+            idxs.add(idx)
+            cur_examples.append({'title': examples[idx][0], 'url': examples[idx][1]})
+        return render_template('index.html', recents=get_recents(), examples=cur_examples,
+                               url='https://www.youtube.com/watch?v=' + vid)
     raise BadRequest()
 
 

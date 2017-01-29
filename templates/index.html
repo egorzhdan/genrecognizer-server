@@ -44,7 +44,11 @@
                         </select>
                     </div>
                     <div class="input-field col s8">
-                        <input id="url" name="url" type="url" class="validate" required>
+                        <input id="url" name="url" type="url" class="validate" required
+                                {% if url %}
+                               value="{{ url }}"
+                                {% endif %}
+                        >
                     </div>
                 </div>
                 <button id="web-submit" class="btn-large waves-effect waves-light fw-btn" style="margin-top: -20px"
@@ -108,5 +112,11 @@
             </div>
         </div>
     </div>
+
+    {% if url %}
+        <script>
+            $('#web-submit').click();
+        </script>
+    {% endif %}
 
 {% endblock %}
