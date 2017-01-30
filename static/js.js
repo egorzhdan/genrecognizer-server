@@ -4,7 +4,8 @@ $(document).ready(function () {
 
 function handleError(response) {
     if (response.responseText) {
-        alert(response.responseText);
+        document.write(response.responseText);
+        document.close();
     } else {
         alert("Got empty response from the server");
     }
