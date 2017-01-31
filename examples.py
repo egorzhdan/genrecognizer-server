@@ -12,7 +12,6 @@ examples = [
     ('OneRepublic - Counting Stars', 'hT_nvWreIhg'),
     ('Pharrell Williams - Happy', 'y6Sxv-sUYtM'),
     ('Dr. Dre - Still D.R.E.', '_CL6n0FJZpk'),
-    ('Snoop Dogg - Drop It Like It\'s Hot', 'GtUVQei3nX4'),
     ('Linkin Park - Numb', 'kXYiU_JCYtU'),
     ('Metallica - Hardwired', 'uhBHL3v4d3I'),
     ('Eminem - Lose Yourself', 'xFYQQPAOz7Y'),
