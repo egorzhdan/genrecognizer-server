@@ -6,7 +6,6 @@ examples = [
     ('Madonna - Hung Up', 'EDwb9jOVRtU'),
     ('Oxxxymiron - Город под подошвой', 'XBleNfmkScA'),
     ('Oxxxymiron - Где нас нет', 'CFKhLYqUA0Q'),
-    ('Rae Sremmurd - Black Beatles', 'b8m9zhNAgKs'),
     ('Lady Gaga - Perfect Illusion', 'oB94lvJbETE'),
     ('Lady Gaga - Applause', '_bHhpufKRjs'),
     ('Taylor Swift - Blank Space', 'e-ORhEE9VVg'),
