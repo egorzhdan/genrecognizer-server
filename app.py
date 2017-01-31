@@ -120,11 +120,11 @@ def process_youtube(filename, url, need_title=False, need_image=False):
     if 'list=' in url:
         url = url[:url.index('&list=')]
     if need_title:
-        title = os.popen('youtube-dl -q --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
+        title = os.popen('youtube-dl -q --username "egor.zhdan@gmail.com" --password "Ololotrololo239" --get-filename -o "%(title)s" "' + url + '"').read().rstrip()
         title = title.replace('<', '(').replace('>', ')') \
             .replace('(Official Music Video)', '').replace('(Lyric Video)', '').replace('(Music Video)', '').replace(
             '[Official Video]', '').replace('(Official Video)', '')
-    os.system('youtube-dl --no-playlist --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
+    os.system('youtube-dl --username "egor.zhdan@gmail.com" --password "Ololotrololo239" --no-playlist --extract-audio --audio-format "wav" --audio-quality 192 -o "' + filename +
               '.%(ext)s" "' + url + '"')
 
     try:
