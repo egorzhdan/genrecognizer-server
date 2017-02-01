@@ -176,6 +176,11 @@ def index_with_url(vid):
     raise BadRequest()
 
 
+@app.route('/examples', methods=['GET'])
+def all_examples():
+    return render_template('examples.html', examples=list(map(lambda x: {'title': x[0], 'url': x[1]}, examples)))
+
+
 @app.route('/recognize_youtube/<path:url>', methods=['GET'])
 def recognize_youtube(url=None):
     global model

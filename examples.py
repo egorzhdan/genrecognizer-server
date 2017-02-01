@@ -17,7 +17,7 @@ examples = [
     ('Eminem - Lose Yourself', 'xFYQQPAOz7Y'),
     ('Iron Maiden - Aces High', 'Xg9aQvjMS60'),
     ('50 Cent - In Da Club', '5qm8PH4xAss'),
-    ('MACKLEMORE & RYAN LEWIS - CAN\'T HOLD US', '2zNSgSzhBfM'),
+    ('Macklemore & Ryan Lewis - Can\'t Hold Us', '2zNSgSzhBfM'),
     ('Shawn Mendes - Stitches', 'VbfpW0pbvaU'),
     ('Iron House - Enter Sandman', '3c7bISLhVl8'),
 ]

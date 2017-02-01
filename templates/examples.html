@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+    <main>
+        <div class="container main-panel">
+            <h3 class="head">genrecognizer</h3>
+            <div class="row">
+                <div class="col s12 m6 l6 offset-m3 offset-l3">
+                    <div class="card-panel">
+                        <h5 style="margin-top: 0; text-align: center">Examples:</h5>
+                        <ul style="margin-bottom: 0">
+                            {% for example in examples %}
+                                <li>
+                                    <a href="/vid={{ example.url }}"><i
+                                            class="material-icons list-icon">input</i> {{ example.title }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+{% endblock %}
