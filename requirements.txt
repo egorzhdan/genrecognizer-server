@@ -6,7 +6,7 @@ Keras==1.1.0
 gevent
 gunicorn
 h5py==2.6.0
-youtube-dl==2017.01.31
+youtube-dl==2017.5.14
 matplotlib
 librosa
 Flask-Heroku-Cacheify>=1.3
