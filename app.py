@@ -72,7 +72,7 @@ model = None
 def spectrogram(file_path):
     y, sr = librosa.load(file_path)
     s = librosa.feature.melspectrogram(y, sr=sr, n_mels=128)
-    log = librosa.logamplitude(s, ref_power=np.max)
+    log = librosa.amplitude_to_db(s, ref=np.max)
     return log[:, :2400], sr
 
 
